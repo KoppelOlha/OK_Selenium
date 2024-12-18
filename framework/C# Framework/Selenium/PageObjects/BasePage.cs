@@ -1,25 +1,25 @@
-using OpenQA.Selenium;
-using System;
-using OpenQA.Selenium.Support.UI;
 using System.Net.Http;
+using OpenQA.Selenium;
 
 namespace Selenium.Pages
 {
     public class BasePage
     {
         public IWebDriver Driver;
-
         public HttpClient client;
+
+        public IWebElement FlashMessage => Driver.FindElement(By.CssSelector(".flash"));
+        public IWebElement Logout => Driver.FindElement(By.PartialLinkText("Logout"));
+
         public BasePage(IWebDriver driver)
         {
             this.Driver = driver;
             client = new HttpClient();
         }
-        public IWebElement FlashMessage => Driver.FindElement(By.CssSelector(".flash"));
-        public IWebElement Logout => Driver.FindElement(By.PartialLinkText("Logout"));
-        public string GetFlashMessage() => FlashMessage.Text;
 
         #region Methods
+        public string GetFlashMessage() => FlashMessage.Text;
+
         public PageHeader OnHeader()
         {
             return new PageHeader(Driver);

@@ -1,37 +1,43 @@
 using System;
-using System.IO;
 using System.Configuration;
+using System.IO;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Chrome;
-
+using OpenQA.Selenium.Firefox;
 
 namespace Selenium.Framework
 {
     public class Settings
     {
-        public static string GetRegularUrl()
+        public Settings()
         {
-            return ConfigurationManager.AppSettings["regularUrl"];
         }
-        public static string GetBasicUrl()
+
+        public IWebDriver GetDriver()
         {
-            return ConfigurationManager.AppSettings["basicUrl"];
-        }
-        public static IWebDriver GetDriver()
-        {
-            string driversPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Drivers");
+            string driverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Drivers");
+
             switch (GetBrowserType())
             {
                 case "chrome":
-                    return new ChromeDriver(driversPath);
+                    return new ChromeDriver(driverPath);
                 case "firefox":
-                    return new FirefoxDriver(driversPath);
+                    return new FirefoxDriver(driverPath);
                 default:
                     throw new Exception("Unknown browser type!");
             }
         }
+
+        public static string GetRegularUrl()
+        {
+            return ConfigurationManager.AppSettings["regularUrl"];
+        }
+
+        public static string GetBasicUrl()
+        {
+            return ConfigurationManager.AppSettings["basicUrl"];
+        }
+
         public static string GetBrowserType()
         {
             return ConfigurationManager.AppSettings["browserType"];
