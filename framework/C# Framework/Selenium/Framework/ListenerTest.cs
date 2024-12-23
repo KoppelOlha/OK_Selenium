@@ -1,14 +1,8 @@
-﻿using Microsoft.Build.BuildEngine;
+﻿using System;
+using System.IO;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Selenium.Framework
 {
@@ -21,18 +15,18 @@ namespace Selenium.Framework
             this.driver = driver;
         }
 
-        public void TestScreenshot() 
+        public void TestScreenshot()
         {
-            var status = TestContext.CurrentContext.Result.Outcome.Status;
-            if (status == TestStatus.Failed)
-            {
-                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                string testName = TestContext.CurrentContext.Test.Name;
-                String imgpath = "C:\\Users\\okoppel\\Source\\Repos\\okoppel-aut15\\framework\\C# Framework\\Selenium\\Framework\\Screenshots\\" + testName + timestamp + ".jpg";
-                ITakesScreenshot scrShot = (ITakesScreenshot)driver;
-                Screenshot screenshot = scrShot.GetScreenshot();
-                screenshot.SaveAsFile(imgpath); 
-            }
+            string scrFormat = ".jpg";
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string testName = TestContext.CurrentContext.Test.Name;
+            string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Screenshots");
+            Directory.CreateDirectory(folderPath);
+            string filePath = folderPath + "\\" + testName + timestamp + scrFormat;
+
+            ITakesScreenshot screenshotDriver = (ITakesScreenshot)driver;
+            Screenshot screenshot = screenshotDriver.GetScreenshot();
+            screenshot.SaveAsFile(filePath);
         }
 
         void ITestListener.SendMessage(TestMessage message)

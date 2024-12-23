@@ -6,15 +6,15 @@ namespace Selenium.Framework
 {
     public class SiteNavigator
     {
-        public static LoginPage NavigateToLoginPage(IWebDriver driver)
+        //МОЖНО УДАЛИТЬ
+        public static void NavigateToLoginPage(IWebDriver driver)
         {
             bool useBasicUrl = bool.Parse(ConfigurationManager.AppSettings["UseBasicUrl"]);
             string url = useBasicUrl
                 ? ConfigurationManager.AppSettings["basicUrl"]
-                : ConfigurationManager.AppSettings["regularUrl"];
-            driver.Navigate().GoToUrl(url);
+                : ConfigurationManager.AppSettings["regularUrl"];            
 
-            return new LoginPage(driver);
+            driver.Navigate().GoToUrl(url);
         }
     }
 }

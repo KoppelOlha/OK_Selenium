@@ -1,20 +1,18 @@
+using System;
+using System.Threading;
 using log4net;
 using NUnit.Framework;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
 using Selenium.Framework;
 using Selenium.Pages;
-using System;
-using System.IO;
 
 namespace Selenium.Tests
 {
     public class BaseTest
     {
-        public IWebDriver Driver;
+        private ThreadLocal<IWebDriver> driver;
+        public IWebDriver Driver => driver.Value;
         public ILog Logger;
-        public ITakesScreenshot Screenshot;
         public HomePage homePage;
         public LoginPage loginPage;
         public AjaxPage ajaxPage;
@@ -31,41 +29,47 @@ namespace Selenium.Tests
         public TestHelper testHelper;
         public RegisterPage registerPage;
 
-
         [SetUp]
-         public virtual void Init()
-         {
-             Logger = LogManager.GetLogger(GetType());
-             Logger.Info("log4net initialized");
-             //Driver = Settings.GetDriver();
-             Driver = new ChromeDriver(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Drivers"));
-             Driver.Manage().Window.Maximize();
-             Logger.Info("Test started");
-             //user = User.GetDefaultUser();
-             //loginPage = SiteNavigator.NavigateToLoginPage(Driver);
+        public virtual void Init()
+        {
+            driver = new ThreadLocal<IWebDriver>(() => new Settings().GetDriver());
+            Logger = LogManager.GetLogger(GetType());
+            Logger.Info("log4net initialized");
+            Driver.Manage().Window.Maximize();
+            Logger.Info("Test started");
 
-             apps = new AppsList(Driver);
-             appPage = new AppPage(Driver);
-             appJSON = new AppJSON(Driver);
-             addNewAppScreen = new AddNewAppScreen(Driver);
-             myApps = new MyApps(Driver);
-             editAppPage = new EditAppPage(Driver);
-             listenerTest = new ListenerTest(Driver);
-             ajaxPage = new AjaxPage(Driver);
-             homePage = new HomePage(Driver);
-             JSPage = new JSPage(Driver);
-             pageHeader = new PageHeader(Driver);
-             testHelper = new TestHelper();
-             registerPage = new RegisterPage(Driver);
+            loginPage = new LoginPage(Driver);
+            apps = new AppsList(Driver);
+            appPage = new AppPage(Driver);
+            appJSON = new AppJSON(Driver);
+            addNewAppScreen = new AddNewAppScreen(Driver);
+            myApps = new MyApps(Driver);
+            editAppPage = new EditAppPage(Driver);
+            listenerTest = new ListenerTest(Driver);
+            ajaxPage = new AjaxPage(Driver);
+            homePage = new HomePage(Driver);
+            JSPage = new JSPage(Driver);
+            pageHeader = new PageHeader(Driver);
+            testHelper = new TestHelper();
+            registerPage = new RegisterPage(Driver);
             Logger.Info("Test init finished");
         }
 
         [TearDown]
-         public virtual void Cleanup()
-         {
-            listenerTest.TestScreenshot();
-
-            this.Driver.Quit();
-         }
+        public virtual void Cleanup()
+        {
+            try
+            {
+                listenerTest.TestScreenshot();
+            }
+            catch (Exception ex)
+            {
+                Logger.Info($"??????: {ex.Message}");
+            }
+            finally
+            {
+                Driver.Quit();
+            }
+        }
     }
 }
